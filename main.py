@@ -21,6 +21,8 @@ from sklearn.svm import SVC, LinearSVC
 import matplotlib.pyplot as plt
 from xgboost import XGBClassifier
 from sklearn.tree import DecisionTreeClassifier
+from sklearn import tree, model_selection
+import pydot
 
 training_set = pd.read_csv('titanic/train.csv')
 test_set = pd.read_csv('titanic/test.csv')
@@ -49,10 +51,8 @@ training_set.drop(indexes, inplace=True)
 indexes = training_set.index[training_set.Fare > 100]
 training_set.drop(indexes, inplace=True)
 
-training_set.drop(columns=['Name', 'Ticket'], axis=1, inplace=True)
-test_set.drop(columns=['Name', 'Ticket'], axis=1, inplace=True)
-
-columns = ['Embarked', 'Parch', 'Pclass', 'Survived', 'Sex', 'SibSp']
+training_set.drop(columns=['Name', 'Ticket', 'PassengerId'], axis=1, inplace=True)
+test_set.drop(columns=['Name', 'Ticket', 'PassengerId'], axis=1, inplace=True)
 
 plt.figure(figsize=(16, 14))
 sn.set(font_scale=1.2)
@@ -68,11 +68,20 @@ x_test = test_set
 
 #print(x_test.isna().sum())
 
-#classifier_dt = DecisionTreeClassifier()
-#classifier_dt.fit(x_train, y_train)
-classifier_xgb = XGBClassifier(use_label_encoder=True)
-classifier_xgb.fit(x_train, y_train)
-y_pred_xgb = classifier_xgb.predict(x_test)
+classifier_dt = DecisionTreeClassifier(random_state=1, max_depth=7, min_samples_leaf=5)
+classifier_dt.fit(x_train, y_train)
+
+print(classifier_dt.score(x_train, y_train))
+
+scores = model_selection.cross_val_score(classifier_dt, x_train, y_train, scoring="accuracy", cv=50)
+print(scores)
+print(scores.mean())
+
+tree.export_graphviz(classifier_dt, feature_names=x_train.columns,out_file="tree.dot")
+
+#classifier_xgb = XGBClassifier(use_label_encoder=True)
+#classifier_xgb.fit(x_train, y_train)
+y_pred_xgb = classifier_dt.predict(x_test)
 
 test_set = pd.read_csv('titanic/test.csv')
 
