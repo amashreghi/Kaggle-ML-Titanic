@@ -3,6 +3,8 @@
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 
+# amashreghi 7/16/2021 - combined a notebook on Kaggle to get rid of outliers and a related lecture by Ju Liu. Achieved 78% accuracy at the time.
+
 import csv
 import sys
 from collections import defaultdict
